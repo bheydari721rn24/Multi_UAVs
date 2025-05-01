@@ -1,0 +1,16 @@
+Multi-UAV Simulation Log - Started at 20250501_063147
+================================================================================
+
+Configuration Parameters:
+  num_uavs: 3
+  num_obstacles: 3
+  dynamic_obstacles: True
+  num_runs: 1
+  base_seed: None
+
+Episode 0 - Completed
+  Reward: -123.3562
+  Success: False
+  Steps: 50
+  ------------------------------------------------------------
+

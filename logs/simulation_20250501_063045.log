@@ -1,0 +1,92 @@
+Multi-UAV Simulation Log - Started at 20250501_063045
+================================================================================
+
+Configuration Parameters:
+  scenario_width: 10.0
+  scenario_height: 10.0
+  uav_radius: 0.05
+  target_radius: 0.05
+  obstacle_radius_min: 0.04
+  obstacle_radius_max: 0.1
+  capture_distance: 1.2
+  sensor_range: 0.4
+  max_steps_per_episode: 50
+  num_sensors: 24
+  trajectory_length: 50
+  time_step: 1
+  uav_initial_velocity: 0.0
+  uav_max_velocity: 0.13
+  uav_max_acceleration: 0.05
+  uav_mass: 0.5
+  target_initial_velocity: 0.0
+  target_max_velocity: 0.13
+  target_max_acceleration: 0.05
+  replay_buffer_size: 100000
+  batch_size: 256
+  pre_batch_size: 50
+  gamma: 0.99
+  tau: 0.001
+  actor_lr: 0.0005
+  critic_lr: 0.001
+  num_episodes: 30000
+  epsilon: 1.0
+  epsilon_min: 0.01
+  epsilon_decay: 0.98
+  d_limit: 1.5
+  curriculum_threshold: 5000
+  curriculum_step_size: 1000
+  curriculum_learning: {'reward_weights': {'approach': 1.0, 'safety': 0.5, 'track': 0.3, 'encircle': 0.5, 'capture': 1.0, 'finish': 10.0}, 'curriculum_steps': [{'step': 0, 'reward_weights': {'approach': 1.0, 'safety': 0.5, 'track': 0.3, 'encircle': 0.5, 'capture': 1.0, 'finish': 10.0}}, {'step': 1000, 'reward_weights': {'approach': 0.8, 'safety': 0.6, 'track': 0.4, 'encircle': 0.6, 'capture': 1.2, 'finish': 12.0}}, {'step': 2000, 'reward_weights': {'approach': 0.6, 'safety': 0.7, 'track': 0.5, 'encircle': 0.7, 'capture': 1.4, 'finish': 14.0}}, {'step': 3000, 'reward_weights': {'approach': 0.4, 'safety': 0.8, 'track': 0.6, 'encircle': 0.8, 'capture': 1.6, 'finish': 16.0}}, {'step': 4000, 'reward_weights': {'approach': 0.2, 'safety': 0.9, 'track': 0.7, 'encircle': 0.9, 'capture': 1.8, 'finish': 18.0}}]}
+  correlation_weights: {'sigma1': 100, 'sigma2': 2, 'sigma3': 5}
+  reward_weights: {'approach': 1.0, 'safety': 1.0, 'track': 1.0, 'encircle': 1.0, 'capture': 1.0, 'finish': 1.0}
+
+Episode 0 - Started (Seed: 8445)
+  Initial Positions:
+    seed: 8445
+ERROR: Curriculum learning: Episode 0, placing target closer to UAVs (min_distance=0.25)
+Episode 0 - Started (Seed: 8445)
+  Initial Positions:
+    uavs: [[1.1375162507172603, 1.1835355582701481], [7.560139733053864, 4.889505909928128], [0.9803372208827379, 9.787883313132504]]
+    target: [9.123954784009335, 6.953194073577559]
+    obstacles: {'positions': [[1.7128342024505288, 3.530638309601601], [5.580908876209994, 0.4052399796682049], [1.8923751097677768, 6.09379927321328]], 'radii': [0.06450098738660756, 0.06846880531199959, 0.07111770979010139]}
+Episode 0 - Started (Seed: 8445)
+  Initial Positions:
+    seed: 8445
+ERROR: Curriculum learning: Episode 0, placing target closer to UAVs (min_distance=0.25)
+Episode 0 - Started (Seed: 8445)
+  Initial Positions:
+    uavs: [[1.1375162507172603, 1.1835355582701481], [7.560139733053864, 4.889505909928128], [0.9803372208827379, 9.787883313132504]]
+    target: [9.123954784009335, 6.953194073577559]
+    obstacles: {'positions': [[1.7128342024505288, 3.530638309601601], [5.580908876209994, 0.4052399796682049], [1.8923751097677768, 6.09379927321328]], 'radii': [0.06450098738660756, 0.06846880531199959, 0.07111770979010139]}
+Episode 10, Step episode:
+  Actions: [array([ 1.        , -0.09906027], dtype=float32), array([1.       , 0.6224099], dtype=float32), array([0.26926646, 1.        ], dtype=float32)]
+  Rewards: [0.46926112876434106, 0.2318160939154738, -0.500579187834039]
+Episode 20, Step episode:
+  Actions: [array([-0.7109823,  0.2278688], dtype=float32), array([ 0.93573695, -0.8887268 ], dtype=float32), array([0.7898911, 1.       ], dtype=float32)]
+  Rewards: [0.41465834005193897, -0.7978981938596825, -0.7675795168799678]
+Episode 22, Step episode:
+  Actions: [array([1.       , 0.6428918], dtype=float32), array([-0.12072793,  0.20846914], dtype=float32), array([0.33066475, 0.377762  ], dtype=float32)]
+  Rewards: [0.3960666075633109, -0.3708868162004132, -0.824198619608911]
+Episode 30, Step episode:
+  Actions: [array([1.        , 0.25667387], dtype=float32), array([ 0.6139771, -1.       ], dtype=float32), array([-0.87769336, -1.        ], dtype=float32)]
+  Rewards: [0.32939820872295084, 0.1019693582135644, -0.9949514405561333]
+Episode 40, Step episode:
+  Actions: [array([-0.4663315,  1.       ], dtype=float32), array([-0.5864139,  1.       ], dtype=float32), array([-0.13035516, -0.13742985], dtype=float32)]
+  Rewards: [0.3683614060593146, -0.5679389209415151, -1.0661308031455776]
+Episode 50, Step episode:
+  Actions: [array([0.80052155, 1.        ], dtype=float32), array([1.        , 0.77805823], dtype=float32), array([0.9803161, 0.5004734], dtype=float32)]
+  Rewards: [0.2638193910989305, -1.0093989502147005, -1.4349375087691694]
+Episode episode - Completed
+  Reward: -2.1805
+  Success: False
+  Steps: 50
+  ------------------------------------------------------------
+
+Episode 1 - Started (Seed: 8445)
+  Initial Positions:
+    seed: 8445
+ERROR: Curriculum learning: Episode 1, placing target closer to UAVs (min_distance=0.25)
+Episode 1 - Started (Seed: 8445)
+  Initial Positions:
+    uavs: [[1.1375162507172603, 1.1835355582701481], [7.560139733053864, 4.889505909928128], [0.9803372208827379, 9.787883313132504]]
+    target: [9.123954784009335, 6.953194073577559]
+    obstacles: {'positions': [[1.7128342024505288, 3.530638309601601], [5.580908876209994, 0.4052399796682049], [1.8923751097677768, 6.09379927321328]], 'radii': [0.06450098738660756, 0.06846880531199959, 0.07111770979010139]}
