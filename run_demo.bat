@@ -1,19 +1,39 @@
 @echo off
+echo =================================================================
+echo    AHFSI-RL Integration Demo with Enhanced Obstacle Avoidance
+echo =================================================================
 
 :: Create output directories if they don't exist
-mkdir .\output\dynamic 2>nul
-mkdir .\output\static 2>nul
-
-echo Running demonstration with random seeds:
-python run_simulation.py --mode demo --load_path ./saved_models/dynamic --num_uavs 3 --num_obstacles 3 --output ./output/dynamic --dynamic_obstacles --num_runs 1 --logging
-python run_simulation.py --mode demo --load_path ./saved_models/static --num_uavs 3 --num_obstacles 3 --output ./output/static --num_runs 1 --logging
+mkdir .\plots 2>nul
 
 echo.
-echo Running demonstration with fixed seeds (reproducible results):
-python run_simulation.py --mode demo --load_path ./saved_models/dynamic --num_uavs 3 --num_obstacles 3 --output ./output/dynamic --dynamic_obstacles --seed 12345 --logging
-python run_simulation.py --mode demo --load_path ./saved_models/static --num_uavs 3 --num_obstacles 3 --output ./output/static --seed 12345 --logging
+echo Available Demo Options:
+echo   1. AHFSI Model with Military Visualization
+echo   2. Standard Model with Military Visualization
+
+:menu
+echo.
+set /p option="Enter option (1-2): "
+
+if "%option%"=="1" (
+    echo.
+    echo Running AHFSI Model with Military Visualization...
+    echo Using the proper military visualization system...
+    call .\.venv\Scripts\activate && python run_simple_demo.py --uavs 3 --obstacles 2 --ahfsi
+) else if "%option%"=="2" (
+    echo.
+    echo Running Standard Model with Military Visualization...
+    echo Using the proper military visualization system...
+    call .\.venv\Scripts\activate && python run_simple_demo.py --uavs 3 --obstacles 2 --no-ahfsi
+) else (
+    echo.
+    echo Invalid option. Please try again.
+    goto menu
+)
 
 echo.
-echo Demonstration completed! Results saved to ./output/ directory.
-echo Press any key to exit...
+echo Demo completed! Any animations have been saved to ./plots/ directory.
+echo.
+echo Press any key to return to the menu, or Ctrl+C to exit...
 pause >nul
+goto menu

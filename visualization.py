@@ -1,50 +1,72 @@
+# Visualization module for Multi-UAV simulation environment
+# Provides real-time graphical representation of UAVs, target, and obstacles
+# Enhanced with better obstacle visibility (10x larger display) and removed UAV trajectories
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.animation import FuncAnimation, FFMpegWriter
 import numpy as np
 import matplotlib.transforms as transforms
 import os
-from utils import CONFIG
+from utils import CONFIG  # Import shared configuration parameters
 import matplotlib.patheffects as path_effects
 import time
 
 class Visualizer:
+    """Visualization system for the Multi-UAV simulation environment.
+    
+    Handles real-time rendering of UAVs, target, obstacles, and sensor data.
+    Features a radar-like military style visualization with specialized graphics
+    for monitoring tactical scenarios and obstacle avoidance behaviors.
+    
+    Key visualization features:
+    - Obstacles are rendered 10x larger than physical size for better visibility
+    - UAV trajectory paths (black lines) are disabled for cleaner visuals
+    - Red polygon shows target encirclement by UAVs
+    """
     def __init__(self, env):
-        self.env = env
+        """Initialize the visualization system.
         
-        # For better-looking plots
+        Args:
+            env: Reference to the simulation environment
+        """
+        self.env = env  # Store reference to environment
+        
+        # Use dark theme for better contrast and military-style visuals
         plt.style.use('dark_background')
         
-        # Create figure with dark green background for radar-like military style (ORIGINAL STYLE)
+        # Create figure with dark green background (radar-like military aesthetic)
         self.fig, self.ax = plt.subplots(figsize=(16, 16), dpi=150, facecolor='#0a3b0a')
-        self.ax.set_facecolor('#093D09')
+        self.ax.set_facecolor('#093D09')  # Slightly lighter green for plot area
         
-        # Title with radar-like styling
+        # Title with radar-like styling (green text with stroke effect)
         title = self.fig.suptitle('Multi-UAV Military Tactical Simulation', fontsize=20, color='#00ff00', y=0.98, fontweight='bold')
         title.set_path_effects([path_effects.withStroke(linewidth=2, foreground='#005500')])
         
-        self.width = CONFIG["scenario_width"]
-        self.height = CONFIG["scenario_height"]
+        # Get scenario dimensions from global configuration
+        self.width = CONFIG["scenario_width"]    # Width in km (15 km)
+        self.height = CONFIG["scenario_height"]  # Height in km (15 km)
         
-        # For smoother animation
+        # Setup for smoother real-time animation and rendering
         self.fig.canvas.draw()
-        plt.ion()  # Turn on interactive mode
+        plt.ion()  # Enable interactive mode for real-time updates
         
-        # For animation
-        self.stored_frames = []
-        self.frame_interval = 0.01  # Time between frames for smoother animation
+        # Animation configuration
+        self.stored_frames = []  # For saving video if requested
+        self.frame_interval = 0.01  # 100 FPS target for smooth animation
         
-        # Initialize plot objects
-        self.uav_patches = []
-        self.uav_capture_circles = []
-        self.uav_trajectory_plots = []
+        # Initialize visualization elements (will be populated during setup)
+        self.uav_patches = []             # UAV triangle markers
+        self.uav_capture_circles = []     # Circles showing UAV capture range
+        self.uav_trajectory_plots = []    # UAV path history (disabled per user request)
         
-        self.target_patch = None
-        self.target_trajectory_plot = None
+        self.target_patch = None          # Target marker
+        self.target_trajectory_plot = None # Target path history
         
-        self.obstacle_plots = []
-        self.obstacle_radar_rings = []
-        self.obstacle_scan_angles = []
+        # Obstacle visualization elements
+        self.obstacle_plots = []          # Main obstacle circles (10x physical size)
+        self.obstacle_radar_rings = []    # Animated radar rings around obstacles
+        self.obstacle_scan_angles = []    # Rotating scan lines for obstacles
         
         # Task state text display with radar-like styling
         self.task_state_text = self.ax.text(
@@ -60,6 +82,8 @@ class Visualizer:
         
         # Encirclement visualization
         self.encirclement_polygon = None
+        # Polygon for UAV encirclement hull
+        self.hull_poly = None
         
         # Set up the plot
         self._setup_plot()
@@ -269,11 +293,12 @@ class Visualizer:
             self.ax.add_patch(capture_circle)
             self.uav_capture_circles.append(capture_circle)
             
-            # UAV trajectory plot with enhanced glowing effect
+            # Intentionally disabled UAV trajectory plots (black paths of UAVs)
+            # Create empty plot objects to maintain code structure but not show actual trajectories
+            # This provides cleaner visualization by hiding the path history of UAVs
             trajectory_plot, = self.ax.plot(
-                [], [], '-', linewidth=3, color=uav_color,
-                alpha=0.8, path_effects=[path_effects.withSimplePatchShadow(
-                    offset=(0, 0), shadow_rgbFace=uav_color, alpha=0.4)]
+                [], [], '-', linewidth=0, color='none',
+                alpha=0.0
             )
             self.uav_trajectory_plots.append(trajectory_plot)
             
@@ -506,8 +531,19 @@ class Visualizer:
         return drone_parts
     
     def render(self, episode, step):
-        """Update the visualization with current environment state."""
-        # Update task state text with radar-like styling
+        """Update the visualization with current environment state.
+        
+        This is the main rendering function that updates all visual elements based on
+        the current state of the environment. Key visualization features include:
+        - Obstacles displayed 10x larger than physical size for better visibility
+        - UAV trajectory paths (black lines) are disabled for cleaner visuals
+        - Red polygon shows target encirclement by UAVs
+        
+        Args:
+            episode: Current episode number
+            step: Current step number within the episode
+        """
+        # Update task state information display in top-left corner
         if hasattr(self.env, 'task_state') and self.env.task_state:
             task_state_str = f"Episode: {episode}, Step: {step}, Task: {self.env.task_state.capitalize()}"
             self.task_state_text.set_text(task_state_str)
@@ -517,11 +553,11 @@ class Visualizer:
             # Update capture circle position
             self.uav_capture_circles[i].center = (uav.position[0], uav.position[1])
             
-            # Update trajectory with glowing effect
-            if hasattr(uav, 'trajectory') and len(uav.trajectory) > 1:
-                traj_x = [pos[0] for pos in uav.trajectory]
-                traj_y = [pos[1] for pos in uav.trajectory]
-                self.uav_trajectory_plots[i].set_data(traj_x, traj_y)
+            # Intentionally disabled trajectory updates as requested by user
+            # By setting empty data arrays, we maintain code structure but don't show any paths
+            # This provides a cleaner visual representation without the black trails
+            # behind UAVs that were previously cluttering the display
+            self.uav_trajectory_plots[i].set_data([], [])
             
             # Update UAV drone patch
             # Remove old drone parts
@@ -543,13 +579,19 @@ class Visualizer:
         self.target_patch.center = (self.env.target.position[0], self.env.target.position[1])
         # Note: No need to update angle for a circle as rotation doesn't affect appearance
         
-        # Update obstacle radar scan animations with proper military radar style
-        for i, scan_line in enumerate(self.obstacle_radar_rings):
+        # Update obstacle radar scan animations
+        for i, obstacle_plot in enumerate(self.obstacle_plots):
+            # Get the physical obstacle from environment
+            obstacle = self.env.obstacles[i]
+            
+            # Update circle patch position
+            # Note: obstacles are displayed at 10x physical size for better visibility
+            # This visual enlargement matches the physics calculations in obstacle avoidance
+            obstacle_plot.center = (obstacle.position[0], obstacle.position[1])
+            
             # Update radar scan angle - rotate clockwise
             self.obstacle_scan_angles[i] = (self.obstacle_scan_angles[i] + 0.12) % (2 * np.pi)
             
-            # Get obstacle position
-            obstacle_plot = self.obstacle_plots[i]
             visual_radius = obstacle_plot.get_radius()
             scan_length = visual_radius
             scan_angle = self.obstacle_scan_angles[i]
@@ -559,34 +601,33 @@ class Visualizer:
             end_y = obstacle_plot.center[1] + scan_length * np.sin(scan_angle)
             
             # Update scan line position - connecting center to inside point
-            scan_line.set_data(
+            self.obstacle_radar_rings[i].set_data(
                 [obstacle_plot.center[0], end_x],
                 [obstacle_plot.center[1], end_y]
             )
         
-        # Update encirclement visualization if UAVs are in position - make it RED as requested
-        if len(self.env.uavs) >= 3:
+        # Update encirclement visualization with RED polygon as specifically requested
+        # This shows how the UAVs are surrounding/encircling the target
+        if len(self.env.uavs) >= 3:  # Need at least 3 UAVs to form a polygon
+            # Get current UAV positions for polygon vertices
             hull_x = [uav.position[0] for uav in self.env.uavs]
             hull_y = [uav.position[1] for uav in self.env.uavs]
-            # Close the polygon
-            hull_x.append(hull_x[0])
-            hull_y.append(hull_y[0])
             
-            # Update or create encirclement polygon - RED FILL
-            if hasattr(self, 'encirclement_polygon') and self.encirclement_polygon:
-                self.encirclement_polygon.remove()
-                
-            # Create a filled red polygon
-            self.encirclement_polygon = patches.Polygon(
-                np.column_stack([hull_x, hull_y]),
-                closed=True,
-                facecolor='red',
-                alpha=0.3,
-                edgecolor='darkred',
-                linewidth=2.0,
-                zorder=2
-            )
-            self.ax.add_patch(self.encirclement_polygon)
+            if self.hull_poly is None:
+                # Create initial encirclement polygon if not yet created
+                self.hull_poly = patches.Polygon(
+                    np.column_stack([hull_x, hull_y]),
+                    closed=True,
+                    fill=True,
+                    facecolor='red',  # Red color as explicitly requested by user
+                    edgecolor='red',
+                    alpha=0.3,        # Semi-transparent
+                    zorder=1          # Below UAVs in rendering order
+                )
+                self.ax.add_patch(self.hull_poly)
+            else:
+                # Update existing polygon with new UAV positions
+                self.hull_poly.set_xy(np.column_stack([hull_x, hull_y]))
         
         # Redraw the canvas and update the display
         self.fig.canvas.draw()
