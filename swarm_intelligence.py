@@ -12,7 +12,7 @@ Date: 2025
 import numpy as np
 import math
 from utils import CONFIG
-import time
+
 
 # Formation types and their ideal distances
 FORMATION_DISTANCES = {

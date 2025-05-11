@@ -1,5 +1,6 @@
 import numpy as np
 
+
 # Configuration parameters
 CONFIG = {
     # Environment parameters

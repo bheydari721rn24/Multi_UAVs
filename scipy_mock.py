@@ -3,6 +3,7 @@
 
 import numpy as np
 
+
 def entropy(pk, qk=None, base=None, axis=0):
     """Mock implementation of scipy.stats.entropy
     This provides a basic implementation to avoid import errors

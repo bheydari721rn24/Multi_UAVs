@@ -4,6 +4,7 @@
 import numpy as np
 from utils import CONFIG
 
+
 # Expected model input dimensions
 MODEL_INPUT_DIM = 250
 

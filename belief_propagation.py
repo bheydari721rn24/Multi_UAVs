@@ -9,10 +9,10 @@ Date: 2025
 """
 
 import numpy as np
-import math
 from utils import CONFIG
 from scipy.stats import multivariate_normal
 from scipy.ndimage import gaussian_filter
+
 
 class BeliefPropagator:
     """

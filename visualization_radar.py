@@ -14,8 +14,8 @@ class RadarVisualizer:
         self.save_animation = save_animation
         self.fps = fps
         # scenario dimensions
-        self.width = CONFIG.get("scenario_width", 15.0)
-        self.height = CONFIG.get("scenario_height", 15.0)
+        self.width = CONFIG.get("scenario_width", 10.0)
+        self.height = CONFIG.get("scenario_height", 10.0)
         # create figure
         plt.style.use('dark_background')
         self.fig, self.ax = plt.subplots(figsize=(8, 8))

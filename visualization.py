@@ -8,9 +8,10 @@ from matplotlib.animation import FuncAnimation, FFMpegWriter
 import numpy as np
 import matplotlib.transforms as transforms
 import os
-from utils import CONFIG  # Import shared configuration parameters
+from utils import CONFIG # Import shared configuration parameters
 import matplotlib.patheffects as path_effects
 import time
+
 
 class Visualizer:
     """Visualization system for the Multi-UAV simulation environment.

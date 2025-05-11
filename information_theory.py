@@ -13,6 +13,7 @@ import math
 from utils import CONFIG
 from scipy.stats import entropy as scipy_entropy
 
+
 class InformationTheory:
     """
     Information-theoretic decision making for swarm systems

@@ -9,8 +9,8 @@ Date: 2025
 """
 
 import numpy as np
-import math
 from utils import CONFIG
+
 
 class TemporalHierarchyController:
     """

@@ -1,7 +1,7 @@
 import numpy as np
 from collections import deque
-import random
 from utils import CONFIG
+
 
 class ReplayBuffer:
     def __init__(self, buffer_size):

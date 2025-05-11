@@ -12,6 +12,7 @@ import numpy as np
 import math
 from utils import CONFIG
 
+
 class GameTheoryCoordinator:
     """
     Game-theoretic coordination for multi-agent systems

@@ -1,7 +1,7 @@
 @echo off
-echo =================================================================
+echo ====================================================================
 echo    AHFSI-RL Integration Training with Enhanced Obstacle Avoidance
-echo =================================================================
+echo ====================================================================
 
 :: Create output directories if they don't exist
 mkdir .\checkpoints\ahfsi 2>nul

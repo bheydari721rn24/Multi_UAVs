@@ -1,10 +1,10 @@
 import os
-import time
 import numpy as np
 from datetime import datetime
 import logging
 import colorama
 from colorama import Fore, Back, Style
+
 
 # Initialize colorama with autoreset and force color mode
 colorama.init(autoreset=True, convert=True, strip=False, wrap=True)

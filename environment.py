@@ -6,11 +6,10 @@ import numpy as np
 import math
 import time
 import os
-import sys
-from datetime import datetime
 from utils import CONFIG, calculate_triangle_area
 
 from agents import UAV, Target, Obstacle, AHFSI_AVAILABLE
+
 
 # Try to import AHFSI framework components if available
 try:
@@ -771,6 +770,13 @@ class Environment:
                 
                 # Update UAV state
                 uav.update(force)
+        
+        # Always update target position - target should move regardless of obstacle dynamics
+        if self.target is not None:
+            # Calculate evasive action for target
+            target_force = self._get_target_evasive_action()
+            # Update target position and velocity
+            self.target.update(target_force, scenario_width=self.width, scenario_height=self.height)
         
         # Track positions and collisions for logging
         uav_positions = []

@@ -13,6 +13,7 @@ import math
 from utils import CONFIG
 import time
 
+
 # Core AHFSI Controller Class
 class AHFSIController:
     """
@@ -380,10 +381,11 @@ class AHFSIController:
         # 4 role dimensions + 1 swarm weight + 1 belief confidence
         return 6
 
+
 import numpy as np
 import math
-from utils import CONFIG
 import time
+from utils import CONFIG
 
 # Import all swarm components
 from swarm_intelligence import SwarmBehavior
@@ -394,6 +396,7 @@ from game_theory import GameTheoryCoordinator
 from belief_propagation import BeliefPropagator
 from topology_analysis import TopologyAnalyzer
 from federated_learning import FederatedLearner
+
 
 class AHFSIController:
     """

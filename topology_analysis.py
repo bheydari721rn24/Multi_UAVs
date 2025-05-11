@@ -10,9 +10,9 @@ Date: 2025
 
 import numpy as np
 import math
-from utils import CONFIG
-from scipy.spatial import distance
 import networkx as nx
+from utils import CONFIG
+
 
 class TopologyAnalyzer:
     """

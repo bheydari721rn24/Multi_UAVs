@@ -1,9 +1,6 @@
 # Military Visualization Selector for Multi-UAV System
 # Provides an interface to use military-style radar visualization
 
-import os
-import sys
-
 # Import visualization system
 from visualization import Visualizer as MilitaryVisualizer
 from environment import Environment

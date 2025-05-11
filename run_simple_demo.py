@@ -4,17 +4,12 @@
 import os
 import sys
 import time
-import math
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib.patches import Circle, Rectangle, Polygon, Wedge
+from matplotlib.patches import Circle
 import matplotlib.patheffects as path_effects
-from matplotlib.collections import PatchCollection
-from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.gridspec as gridspec
 from colorama import Fore, Style, init
-import tensorflow as tf  # Required for direct model inference
 
 # Initialize colorama for terminal coloring
 init()
@@ -22,21 +17,11 @@ init()
 # Add the directory containing the visualization module to path
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
-# Add the directory containing the visualization module to path
-# No special imports needed - using original AHFSI implementation
-
 # Import required modules
 from environment import Environment
 from networks import ActorNetwork
 from utils import CONFIG
 
-
-# Import numpy optimizations if available
-try:
-    import numba
-    has_numba = True
-except ImportError:
-    has_numba = False
 
 # Performance tracking variables
 profile_data = {
@@ -76,8 +61,8 @@ def pursue_target(uav, target, obstacles=None):
             obs_distance = np.linalg.norm(to_obstacle)
             
             # Only consider obstacles within detection range
-            # Using physical obstacle radius directly as mentioned in the memory
-            safe_distance = obstacle.radius + 0.7  # Safety margin increased
+            # Use UAV sensor range for safety margin
+            safe_distance = obstacle.radius + CONFIG["sensor_range"] * 1.2
             
             if obs_distance < safe_distance:
                 # Normalize direction to obstacle
@@ -87,9 +72,8 @@ def pursue_target(uav, target, obstacles=None):
                 # Calculate how much the obstacle is in our path
                 # Higher value means more directly in front
                 in_path = np.dot(direction, to_obstacle)
-                
-                # Only avoid if obstacle is somewhat in our path
-                if in_path > 0.2:
+                # Avoid any obstacle ahead
+                if in_path > 0:
                     # Generate avoidance vector (perpendicular to obstacle direction)
                     # Use the cross product to get a consistent avoidance direction
                     avoid_dir = np.array([-to_obstacle[1], to_obstacle[0]])
@@ -107,8 +91,8 @@ def pursue_target(uav, target, obstacles=None):
             # Normalize avoidance force
             avoidance_force = avoidance_force / np.linalg.norm(avoidance_force)
             
-            # Blend pursuit and avoidance (70% pursuit, 30% avoidance)
-            combined = direction * 0.7 + avoidance_force * 0.3
+            # Blend pursuit and avoidance equally for robust avoidance
+            combined = direction * 0.5 + avoidance_force * 0.5
             
             # Re-normalize
             if np.linalg.norm(combined) > 0:
@@ -188,7 +172,7 @@ def is_target_encircled(uavs, target, threshold=1.8):
     
     return max_gap <= max_allowed_gap
 
-def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600):
+def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600, dynamic_obstacles=False):
     """Run a simplified military radar visualization with direct rendering"""
     # Print mission briefing
     print(Fore.CYAN + "\n===== UAV TACTICAL MISSION BRIEFING =====")
@@ -207,10 +191,11 @@ def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600):
     CONFIG["num_obstacles"] = num_obstacles
     CONFIG["mode"] = "demo"
     CONFIG["episodes"] = 1
+    CONFIG["max_steps_per_episode"] = max_steps
     
     # Create environment with the three-stage operation capability
     env = Environment(num_uavs=num_uavs, num_obstacles=num_obstacles,
-                      enable_ahfsi=use_ahfsi, dynamic_obstacles=True)
+                      enable_ahfsi=use_ahfsi, dynamic_obstacles=dynamic_obstacles)
     
     # Initialize the simulation with pursuit behavior as fallback
     print(f"Initializing UAV simulation with {num_uavs} UAVs and {num_obstacles} obstacles")
@@ -229,13 +214,12 @@ def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600):
     plt.rcParams['figure.autolayout'] = False  # Disable expensive autolayout
     plt.rcParams['savefig.bbox'] = 'tight'  # Faster for any potential saves
     plt.rcParams['figure.facecolor'] = '#0a0a0a'
-    plt.rcParams['figure.dpi'] = 100  # Lower DPI for faster rendering
     plt.rcParams['figure.autolayout'] = False  # Disable expensive autolayout
     plt.rcParams['toolbar'] = 'None'  # Disable toolbar for slightly better performance
     plt.rcParams['image.interpolation'] = 'nearest'  # Fastest interpolation
     
     # Create figure with multiple subplots for tactical display
-    fig = plt.figure(figsize=(16, 10), dpi=100, facecolor='#0a0a0a')
+    fig = plt.figure(figsize=(16, 16), dpi=100, facecolor='#0a0a0a')
     # Enable matplotlib to use the canvas buffer for faster rendering
     fig.canvas.draw()  # Initial draw to set up canvas
     
@@ -540,22 +524,23 @@ def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600):
             self.state_dim = state_dim
             self.action_dim = action_dim
             
-            # Import TensorFlow directly in this controller
-            import tensorflow as tf
-            from tensorflow.keras.models import load_model
-            
-            # Try to load the model
+            # Load model weights into ActorNetwork instead of full model
             if os.path.exists(model_path):
+                # Determine actor name from filename
+                actor_name = os.path.splitext(os.path.basename(model_path))[0]
+                # Instantiate ActorNetwork and load weights
+                network = ActorNetwork(self.state_dim, self.action_dim, actor_name)
                 try:
-                    # Load the model directly using Keras
-                    self.model = load_model(model_path, compile=False)
+                    network.model.load_weights(model_path, by_name=True, skip_mismatch=True)
+                    network.target_model.load_weights(model_path, by_name=True, skip_mismatch=True)
+                    self.model = network.model
                     self.model_loaded = True
-                    print(f"Successfully loaded model from {model_path}")
+                    print(f"Successfully loaded weights for {actor_name} from {model_path}")
                 except Exception as e:
-                    print(f"Error loading model: {e}")
+                    print(f"Error loading weights: {e}")
                     self.model_loaded = False
             else:
-                print(f"Model file not found: {model_path}")
+                print(f"Model weights file not found: {model_path}")
                 self.model_loaded = False
         
         def predict(self, observation):
@@ -584,7 +569,12 @@ def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600):
                 obs_tensor = tf.convert_to_tensor(observation, dtype=tf.float32)
                 
                 # Get prediction
-                prediction = self.model.predict(obs_tensor, verbose=0)
+                tf_output = self.model(obs_tensor, training=False)
+                # Convert output tensor to numpy array
+                if hasattr(tf_output, 'numpy'):
+                    prediction = tf_output.numpy()
+                else:
+                    prediction = np.array(tf_output)
                 
                 # Extract action based on prediction format
                 if isinstance(prediction, list):
@@ -631,6 +621,13 @@ def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600):
         print(f"Warning: No trained models found in {checkpoint_dir}")
         print("Running with random actions")
     
+    # Single-run logging of model usage per UAV
+    for i, uav in enumerate(env.uavs):
+        if uav.has_controller:
+            print(f"UAV {i} using trained model")
+        else:
+            print(f"UAV {i} using fallback behavior")
+
     # Make window visible
     # Make window visible
     plt.ion()  # Interactive mode on
@@ -680,15 +677,9 @@ def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600):
                             # Apply scaling for smooth control
                             max_force = 0.8  # Maximum force for UAV control
                             action = action * max_force
-                            
-                            # Log model usage periodically
-                            if step % 50 == 0:
-                                print(f"UAV {i} using trained model successfully")
                         else:
                             # Prediction failed, use pursuit behavior
                             action = pursue_target(uav, env.target, env.obstacles)
-                            if step % 50 == 0:
-                                print(f"UAV {i} using fallback behavior (prediction failed)")
                     except Exception as e:
                         # Handle any errors by falling back to basic behavior
                         print(f"Model error for UAV {i}: {e}, using fallback")
@@ -696,8 +687,6 @@ def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600):
                 else:
                     # No controller available, use basic pursuit behavior
                     action = pursue_target(uav, env.target, env.obstacles)
-                    if step % 100 == 0:
-                        print(f"UAV {i} using pursuit behavior (no controller)")
 
                         
                 actions.append(action)
@@ -741,16 +730,14 @@ def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600):
                 running = False
                 break
             
-            # Check if target has been captured (any UAV very close to target)
-            target_captured = False
-            for uav in env.uavs:
-                dist_to_target = np.linalg.norm(uav.position - env.target.position)
-                if dist_to_target < 1.0:  # Within 1km of target
-                    target_captured = True
-                    break
-            
-            if target_captured:
-                print(f"Target captured at step {step}! Mission successful.")
+            # Check if target has been captured based on environment's info state
+            # This ensures the visualization and environment are in sync
+            if info.get('success', False):
+                # Only print this message once per capture
+                if not hasattr(env, 'capture_displayed') or not env.capture_displayed:
+                    print(f"\n{Fore.GREEN}TARGET CAPTURED! ROUNDUP COMPLETE!{Style.RESET_ALL}")
+                    env.capture_displayed = True
+                    
                 # Allow a few more steps to show the capture
                 if step % 5 == 0 and step > 50:
                     running = False
@@ -997,77 +984,6 @@ def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600):
                         # Fall back for backends that don't support blitting
                         fig.canvas.draw_idle()  # Still faster than full draw()
 
-            # Update target information text
-            if uavs_in_range >= 3:
-                target_info += "\nTHREAT LEVEL: *CRITICAL*"
-            elif uavs_in_range >= 2:
-                target_info += "\nTHREAT LEVEL: HIGH"
-            elif uavs_in_range >= 1:
-                target_info += "\nTHREAT LEVEL: MODERATE"
-            else:
-                target_info += "\nTHREAT LEVEL: LOW"
-                
-            target_info_text.set_text(target_info)
-                
-            # Check for encirclement to determine mission completion
-            encircled = is_target_encircled(env.uavs, env.target, threshold=1.8)
-            min_dist = min_distance_to_target(env.uavs, env.target)
-            
-            if encircled and min_dist < 1.8:
-                # Mission accomplished - target has been captured
-                success_message = f"MISSION: SUCCESS\nTARGET CAPTURED\n{mission_time}"
-                mission_text.set_text(success_message)
-                mission_text.set_color('#33ff33')  # Bright green for success
-                mission_text.set_bbox(dict(facecolor='#003300', alpha=1.0, edgecolor='#00ff00', pad=5))
-                
-                print(f"\n{Fore.GREEN}TARGET CAPTURED! ROUNDUP COMPLETE!{Style.RESET_ALL}")
-                running = False  # End the simulation
-                
-            # Rendering optimization - only do expensive rendering when needed
-            # Adaptive refresh rate based on rendering performance
-            refresh_rate = max(1, int(3 * (1 + min(vis_time, 0.2) * 10)))
-            if step % refresh_rate == 0:
-                # Use optimized double buffering with background restoration when available
-                if blitting_supported and background is not None:
-                    try:
-                        # Step 1: Restore background - much faster than redrawing everything
-                        try:
-                            fig.canvas.restore_region(background)
-                        except (AttributeError, ValueError):
-                            # Fall back if restore fails
-                            pass
-                            
-                        # Step 2: Redraw just the updated artists
-                        for i, uav in enumerate(env.uavs):
-                            ax.draw_artist(uav_bodies[i])
-                            ax.draw_artist(uav_centers[i])
-                            ax.draw_artist(uav_sensors[i])
-
-                        # Step 3: Draw target
-                        ax.draw_artist(target_scatter)
-                            
-                        # Step 4: Only draw detail elements when performance allows it
-                        if vis_time < 0.1:  # Only when we have rendering headroom
-                            # Draw text elements
-                            for annotation in text_elements:
-                                ax.draw_artist(annotation)
-                                
-                            # Draw UAV details (rotors and arms)
-                            for i in range(len(env.uavs)):
-                                for rotor in uav_rotors[i]:
-                                    ax.draw_artist(rotor)
-                                for arm in uav_arms[i]:
-                                    ax.draw_artist(arm)
-
-                        # Step 5: Blit the updated region to display
-                        fig.canvas.blit(ax.bbox)
-                    except (AttributeError, ValueError, TypeError):
-                        # Fall back to optimized draw_idle if blitting fails
-                        fig.canvas.draw_idle()
-                else:
-                    # Fall back for backends that don't support blitting
-                    fig.canvas.draw_idle()  # Still faster than full draw()
-
                 # Process GUI events with throttling for better performance
                 try:
                     fig.canvas.flush_events()
@@ -1077,7 +993,8 @@ def run_simple_demo(use_ahfsi=True, num_uavs=3, num_obstacles=3, max_steps=600):
                 # Calculate visualization time for profiling
                 vis_end = time.perf_counter()
                 vis_time = vis_end - vis_start
-                        # Print profiling info every 2 steps
+                
+                # Print profiling info every 2 steps
             if step % 50 == 0:
                 print(f"[PROFILE] Step {step}: Action: {action_time:.2f} ms | Env: {env_step_time*1000:.2f} ms | Vis: {vis_time*1000:.2f} ms")
             
@@ -1133,11 +1050,14 @@ if __name__ == "__main__":
                       help="Number of UAVs in simulation (default: 3)")
     parser.add_argument("--obstacles", type=int, default=3,
                       help="Number of obstacles in simulation (default: 3)")
+    parser.add_argument("--dynamic-obstacles", action="store_true", dest="dynamic_obstacles",
+                        help="Enable dynamic obstacle movement (default: disabled)")
 
     args = parser.parse_args()
     
     run_simple_demo(
         use_ahfsi=args.ahfsi,
         num_uavs=args.uavs,
-        num_obstacles=args.obstacles
+        num_obstacles=args.obstacles,
+        dynamic_obstacles=args.dynamic_obstacles
     )

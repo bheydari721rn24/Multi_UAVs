@@ -1,0 +1,53 @@
+2025-05-10 19:09:58 - INFO - Multi-UAV Simulation Log - Started at 20250510_190958
+2025-05-10 19:09:58 - INFO - ================================================================================
+2025-05-10 19:09:58 - INFO - Configuration Parameters:
+2025-05-10 19:09:58 - PROGRESS - [45m[37mTraining with 3 UAVs, 2 obstacles for 1 episodes. Dynamic obstacles: OFF[0m
+2025-05-10 19:09:58 - DEBUG -   scenario_width: 25.0
+2025-05-10 19:09:58 - DEBUG -   scenario_height: 25.0
+2025-05-10 19:09:58 - DEBUG -   uav_radius: 0.05
+2025-05-10 19:09:58 - DEBUG -   target_radius: 0.05
+2025-05-10 19:09:58 - DEBUG -   obstacle_radius_min: 0.4
+2025-05-10 19:09:58 - DEBUG -   obstacle_radius_max: 3.0
+2025-05-10 19:09:58 - DEBUG -   capture_distance: 1.5
+2025-05-10 19:09:58 - DEBUG -   encircle_radius: 2.5
+2025-05-10 19:09:58 - DEBUG -   sensor_range: 0.5
+2025-05-10 19:09:58 - DEBUG -   max_steps_per_episode: 50
+2025-05-10 19:09:58 - DEBUG -   num_sensors: 24
+2025-05-10 19:09:58 - DEBUG -   trajectory_length: 50
+2025-05-10 19:09:58 - DEBUG -   time_step: 1
+2025-05-10 19:09:58 - DEBUG -   uav_initial_velocity: 0.0
+2025-05-10 19:09:58 - DEBUG -   uav_max_velocity: 0.13
+2025-05-10 19:09:58 - DEBUG -   uav_max_acceleration: 0.05
+2025-05-10 19:09:58 - DEBUG -   uav_mass: 0.5
+2025-05-10 19:09:58 - DEBUG -   uav_sight_range: 3.0
+2025-05-10 19:09:58 - DEBUG -   target_initial_velocity: 0.0
+2025-05-10 19:09:58 - DEBUG -   target_max_velocity: 0.13
+2025-05-10 19:09:58 - DEBUG -   target_max_acceleration: 0.05
+2025-05-10 19:09:58 - DEBUG -   replay_buffer_size: 100000
+2025-05-10 19:09:58 - DEBUG -   batch_size: 256
+2025-05-10 19:09:58 - DEBUG -   pre_batch_size: 64
+2025-05-10 19:09:58 - DEBUG -   gamma: 0.99
+2025-05-10 19:09:58 - DEBUG -   tau: 0.001
+2025-05-10 19:09:58 - DEBUG -   actor_lr: 0.0003
+2025-05-10 19:09:58 - DEBUG -   critic_lr: 0.0007
+2025-05-10 19:09:58 - DEBUG -   train_interval: 5
+2025-05-10 19:09:58 - DEBUG -   num_episodes: 2
+2025-05-10 19:09:58 - DEBUG -   epsilon: 1.0
+2025-05-10 19:09:58 - DEBUG -   epsilon_min: 0.05
+2025-05-10 19:09:58 - DEBUG -   epsilon_decay: 0.995
+2025-05-10 19:09:58 - DEBUG -   d_limit: 2.0
+2025-05-10 19:09:58 - DEBUG -   curriculum_threshold: 3000
+2025-05-10 19:09:58 - DEBUG -   curriculum_step_size: 500
+2025-05-10 19:09:58 - DEBUG -   curriculum_learning: {'reward_weights': {'approach': 1.0, 'safety': 0.5, 'track': 0.5, 'encircle': 0.7, 'capture': 1.5, 'finish': 15.0}, 'curriculum_steps': [{'step': 0, 'reward_weights': {'approach': 1.0, 'safety': 0.5, 'track': 0.5, 'encircle': 0.7, 'capture': 1.5, 'finish': 15.0}}, {'step': 500, 'reward_weights': {'approach': 0.9, 'safety': 0.6, 'track': 0.6, 'encircle': 0.8, 'capture': 1.8, 'finish': 17.0}}, {'step': 1000, 'reward_weights': {'approach': 0.8, 'safety': 0.7, 'track': 0.7, 'encircle': 0.9, 'capture': 2.0, 'finish': 19.0}}, {'step': 1500, 'reward_weights': {'approach': 0.7, 'safety': 0.8, 'track': 0.8, 'encircle': 1.0, 'capture': 2.2, 'finish': 21.0}}, {'step': 2000, 'reward_weights': {'approach': 0.6, 'safety': 0.9, 'track': 0.9, 'encircle': 1.1, 'capture': 2.4, 'finish': 23.0}}, {'step': 2500, 'reward_weights': {'approach': 0.5, 'safety': 1.0, 'track': 1.0, 'encircle': 1.2, 'capture': 2.6, 'finish': 25.0}}]}
+2025-05-10 19:09:58 - DEBUG -   correlation_weights: {'sigma1': 100, 'sigma2': 2, 'sigma3': 5}
+2025-05-10 19:09:58 - DEBUG -   reward_weights: {'approach': 1.0, 'safety': 1.0, 'track': 1.0, 'encircle': 1.0, 'capture': 1.0, 'finish': 10.0, 'progressive': {'approach': {'initial': 1.0, 'final': 0.5, 'decay_rate': 0.9998}, 'safety': {'initial': 0.6, 'final': 0.9, 'decay_rate': 0.9998}, 'track': {'initial': 0.5, 'final': 1.0, 'decay_rate': 0.9998}, 'encircle': {'initial': 0.7, 'final': 1.5, 'decay_rate': 0.9998}, 'capture': {'initial': 1.5, 'final': 2.5, 'decay_rate': 0.9998}, 'finish': {'initial': 15.0, 'final': 30.0, 'decay_rate': 0.9998}}}
+2025-05-10 19:09:58 - DEBUG -   swarm: {'federated_learning': {'enabled': True, 'communication_range': 3.0, 'sharing_interval': 5, 'knowledge_dimension': 128, 'model_fusion_weight': 0.3, 'fusion_confidence_threshold': 0.6, 'federation_topology': 'dynamic'}, 'quantum_optimization': {'enabled': True, 'interference_factor': 0.4, 'phase_shift_rate': 0.15, 'superposition_decay': 0.97, 'entanglement_strength': 0.5, 'quantum_sigma': 2.5}, 'information_theory': {'enabled': True, 'entropy_grid_size': [30, 30], 'entropy_decay_rate': 0.95, 'information_gain_weight': 0.7, 'exploration_factor': 0.4, 'mutual_information_threshold': 0.3}, 'temporal_abstraction': {'enabled': True, 'num_temporal_scales': 3, 'temporal_horizons': [5, 20, 50], 'scale_update_rates': [1.0, 0.5, 0.2], 'temporal_discount_factors': [0.9, 0.95, 0.99]}, 'game_theory': {'enabled': True, 'leader_selection_interval': 10, 'leadership_quality_threshold': 0.7, 'follower_coherence_factor': 0.6, 'role_switching_cost': 0.3, 'stackelberg_alpha': 0.4}, 'belief_propagation': {'enabled': True, 'belief_grid_resolution': [50, 50], 'observation_noise_sigma': 0.2, 'process_noise_sigma': 0.1, 'confidence_decay_rate': 0.98, 'min_belief_update_threshold': 0.05}, 'topology': {'enabled': True, 'persistence_threshold': 0.3, 'filtration_steps': 10, 'homology_dimension_max': 2, 'feature_significance_threshold': 0.4, 'pattern_recognition_update_rate': 0.2}, 'behaviors': {'cohesion': {'weight': 0.5, 'distance_threshold': 2.0, 'adaptive_factor': 0.2}, 'separation': {'weight': 0.7, 'minimum_distance': 0.3, 'adaptive_factor': 0.3}, 'alignment': {'weight': 0.4, 'max_influence_distance': 1.5, 'adaptive_factor': 0.15}, 'formation': {'weight': 0.6, 'formation_types': ['circle', 'line', 'triangle', 'wedge'], 'formation_scale_factor': 1.2, 'dynamic_formation_switching': True}}, 'rl_integration': {'enabled': True, 'initial_swarm_weight': 0.4, 'adaptive_weighting': True, 'context_adaptation_rate': 0.05, 'swarm_reward_factor': 0.3}}
+2025-05-10 19:09:58 - DEBUG -   num_uavs: 3
+2025-05-10 19:09:58 - DEBUG -   num_obstacles: 2
+2025-05-10 19:09:58 - DEBUG -   mode: demo
+2025-05-10 19:09:58 - DEBUG -   episodes: 1
+2025-05-10 19:09:58 - ERROR - Curriculum learning: Episode 0, placing target closer to UAVs (min_distance=0.25)
+2025-05-10 19:09:58 - INFO - Episode 0 - Started (Seed: 1598)
+2025-05-10 19:09:58 - DEBUG -   Initial uavs: [[0.12376455877362123, 11.813779953802614], [21.423514979959982, 7.8915972495809905], [11.482479763566342, 16.478078169728043]]
+2025-05-10 19:09:58 - DEBUG -   Initial target: [17.68201096000745, 9.559983231807312]
+2025-05-10 19:09:58 - DEBUG -   Initial obstacles: {'positions': [[7.561934108289924, 3.9767990212524524], [14.443058822772452, 3.797726614453488]], 'radii': [2.1225067904724546, 0.4042197355645457]}

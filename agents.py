@@ -3,9 +3,9 @@
 
 import numpy as np
 import math
-import os
-import sys
+
 from utils import CONFIG
+
 
 # Import AHFSI framework components if available
 try:
@@ -13,7 +13,7 @@ try:
     AHFSI_AVAILABLE = True
 except ImportError as e:
     AHFSI_AVAILABLE = False
-    print(f"Warning: AHFSI framework not available. Error: {e}. Running with standard behavior.")  # Import global configuration parameters
+    print(f"Warning: AHFSI framework not available. Error: {e}. Running with standard behavior.") # Import global configuration parameters
 
 class UAV:
     """Unmanned Aerial Vehicle (UAV) agent with physics-based movement and sensor capabilities.

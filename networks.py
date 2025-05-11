@@ -6,7 +6,8 @@ from tensorflow.keras.layers import Dense, Input, Concatenate
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 import numpy as np
-from utils import CONFIG  # Import configuration parameters
+from utils import CONFIG # Import configuration parameters
+
 
 class ActorNetwork:
     """Actor network for the MADDPG algorithm.

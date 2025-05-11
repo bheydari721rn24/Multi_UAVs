@@ -1,9 +1,9 @@
 import numpy as np
-import tensorflow as tf
 import os
 from networks import ActorNetwork, CriticNetwork
 from replay_buffer import ReplayBuffer
 from utils import CONFIG, calculate_triangle_area, create_directory
+
 
 class CEL_MADDPG:
     def __init__(self, state_dim, action_dim, num_agents, save_path="./saved_models", load_path=None):

@@ -4,6 +4,7 @@
 import numpy as np
 import time
 
+
 # Performance monitoring variables
 timing_data = {
     "physics": [],

@@ -1,21 +1,18 @@
 # AHFSI Integration with Existing MADDPG RL System
 
 import numpy as np
-import tensorflow as tf
-import time
 import os
 import matplotlib.pyplot as plt
-from tqdm import tqdm
 from environment import Environment
 from utils import CONFIG
 from networks import ActorNetwork, CriticNetwork
 from replay_buffer import ReplayBuffer
-import sys
 import logging
 import datetime
 from pathlib import Path
 import pandas as pd
 from colorama import init, Fore, Style
+
 
 # Initialize colorama for colored terminal output
 init()
@@ -828,14 +825,6 @@ class AHFSIRLIntegrator:
 
 def train_with_integration():
     """Run the AHFSI-RL integration training"""
-    # Import matplotlib for plotting reward charts
-    try:
-        import matplotlib.pyplot as plt
-        import numpy as np
-        MATPLOTLIB_AVAILABLE = True
-    except ImportError:
-        print("Warning: matplotlib not available. Reward plots will not be generated.")
-        MATPLOTLIB_AVAILABLE = False
         
     print("Starting AHFSI-RL Integration Training")
     print("=" * 60)
